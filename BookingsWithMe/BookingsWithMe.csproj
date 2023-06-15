@@ -28,6 +28,9 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Constants\" />
   </ItemGroup>
 
 </Project>
