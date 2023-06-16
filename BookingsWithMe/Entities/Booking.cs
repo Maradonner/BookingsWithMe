@@ -1,4 +1,6 @@
-﻿namespace BookingsWithMe.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BookingsWithMe.Entities;
 
 public class Booking
 {
@@ -9,6 +11,7 @@ public class Booking
     public string CustomerTimeZone { get; set; } = string.Empty;
     public TimeSpan Duration { get; set; }
     public string Status { get; set; }  //"Scheduled", "Cancelled", "Completed"
+    [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
     public User User { get; set; }
 }
