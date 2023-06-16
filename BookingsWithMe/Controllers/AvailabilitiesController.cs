@@ -27,7 +27,7 @@ public class AvailabilitiesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Availability>> GetAvailability(int id)
+    public async Task<ActionResult> GetAvailability(Guid id)
     {
         var availability = await _context.Availabilities.FindAsync(id);
 
@@ -36,16 +36,24 @@ public class AvailabilitiesController : ControllerBase
             return NotFound();
         }
 
-        return availability;
+        var availabilityForDisplay = _mapper.Map<AvailabilityForDisplayDto>(availability);
+
+        return Ok(availabilityForDisplay);
     }
 
     [HttpPost]
     public async Task<ActionResult> PostAvailability(AvailabilityForCreationDto availabilityForCreationDto)
     {
+        var user = await _context.Users.FindAsync(availabilityForCreationDto.UserId);
+
+        if (user == null)
+            return BadRequest("User with that id is not exists");
+
         var availability = _mapper.Map<Availability>(availabilityForCreationDto);
 
-        _context.Availabilities.Add(availability);
+        await _context.Availabilities.AddAsync(availability);
         await _context.SaveChangesAsync();
+
 
         var availabilityForDisplayDto = _mapper.Map<AvailabilityForDisplayDto>(availability);
 
@@ -57,7 +65,7 @@ public class AvailabilitiesController : ControllerBase
     {
         var availability = _mapper.Map<Availability>(availabilityForUpdateDto);
 
-        _context.Entry(availability).State = EntityState.Modified;
+        _context.Availabilities.Update(availability);
         await _context.SaveChangesAsync();
 
         var availabilityForDisplayDto = _mapper.Map<AvailabilityForDisplayDto>(availability);
@@ -70,9 +78,7 @@ public class AvailabilitiesController : ControllerBase
     {
         var availability = await _context.Availabilities.FindAsync(id);
         if (availability == null)
-        {
             return NotFound();
-        }
 
         _context.Availabilities.Remove(availability);
         await _context.SaveChangesAsync();

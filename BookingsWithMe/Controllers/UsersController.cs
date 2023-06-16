@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult> GetUsers(
-        [FromQuery]UsersResourceParameters usersResourceParameters, CancellationToken ct)
+        [FromQuery] UsersResourceParameters usersResourceParameters, CancellationToken ct)
     {
         var collection = _context.Users as IQueryable<User>;
 
@@ -48,12 +48,34 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [HttpPost]
+    public async Task<ActionResult> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
+    {
+        if (await EmailExists(userForCreationDto.Email, ct))
+            return BadRequest("User with that email is already exists");
+
+        var user = _mapper.Map<User>(userForCreationDto);
+
+        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+            user.Availabilities.Add(new Availability
+            {
+                Day = day,
+                UserId = user.Id,
+            });
+        }
+
+        await _context.Users.AddAsync(user, ct);
+        await _context.SaveChangesAsync(ct);
+
+        var userForDisplay = _mapper.Map<UserForDisplayDto>(user);
+
+        return CreatedAtAction("GetUser", new { id = user.Id }, userForDisplay);
+    }
+
     [HttpPut("{id}")]
     public async Task<ActionResult> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
-        if (await EmailExists(userForUpdateDto.Email, ct))
-            return BadRequest("User with that email is already exists");
-
         var user = _mapper.Map<User>(userForUpdateDto);
 
         _context.Entry(user).State = EntityState.Modified;
@@ -63,19 +85,6 @@ public class UsersController : ControllerBase
         var userForDisplayDto = _mapper.Map<UserForDisplayDto>(user);
 
         return Ok(userForDisplayDto);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
-    {
-        var user = _mapper.Map<User>(userForCreationDto);
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync(ct);
-
-        var userForDisplay = _mapper.Map<UserForDisplayDto>(user);
-
-        return CreatedAtAction("GetUser", new { id = user.Id }, userForDisplay);
     }
 
     [HttpDelete("{id}")]

@@ -8,6 +8,8 @@ public class AvailabilityProfiler : Profile
 {
     public AvailabilityProfiler()
     {
+        CreateMap<Availability, AvailabilityForCreationDto>().ReverseMap();
+
         CreateMap<Availability, AvailabilityForDisplayDto>().ReverseMap();
 
         CreateMap<Availability, AvailabilityForManipulationDto>()
