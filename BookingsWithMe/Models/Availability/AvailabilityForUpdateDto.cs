@@ -1,5 +1,6 @@
 ﻿namespace BookingsWithMe.Models.Availabilitie;
 
-public class AvailabilityForUpdateDto
+public class AvailabilityForUpdateDto : AvailabilityForManipulationDto
 {
+    public Guid Id { get; set; }
 }

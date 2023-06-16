@@ -20,7 +20,6 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Users
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
@@ -31,7 +30,6 @@ public class UsersController : ControllerBase
         return await _context.Users.ToListAsync();
     }
 
-    // GET: api/Users/5
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(Guid id)
     {
@@ -49,39 +47,23 @@ public class UsersController : ControllerBase
         return user;
     }
 
-    // PUT: api/Users/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(Guid id, User user)
+    public async Task<IActionResult> PutUser(UserForUpdateDto userForUpdateDto)
     {
-        if (id != user.Id)
-        {
-            return BadRequest();
-        }
+        if (await UserExists(userForUpdateDto.Email))
+            return BadRequest("User with that email is already exists");
+
+        var user = _mapper.Map<User>(userForUpdateDto);
 
         _context.Entry(user).State = EntityState.Modified;
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!UserExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+        await _context.SaveChangesAsync();
 
-        return NoContent();
+        var userForDisplayDto = _mapper.Map<UserForDisplayDto>(user);
+
+        return Ok(userForDisplayDto);
     }
 
-    // POST: api/Users
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<User>> PostUser(UserForCreationDto userForCreationDto)
     {
@@ -96,7 +78,6 @@ public class UsersController : ControllerBase
         return CreatedAtAction("GetUser", new { id = user.Id }, user);
     }
 
-    // DELETE: api/Users/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
@@ -116,8 +97,8 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    private bool UserExists(Guid id)
+    private async Task<bool> UserExists(string email)
     {
-        return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+        return await _context.Users.AnyAsync(x => x.Email == email);
     }
 }
