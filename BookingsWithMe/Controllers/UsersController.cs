@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BookingsWithMe.Data;
 using BookingsWithMe.Entities;
+using BookingsWithMe.Helpers;
 using BookingsWithMe.Models.User;
+using BookingsWithMe.ResourceParameters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,48 +18,47 @@ public class UsersController : ControllerBase
 
     public UsersController(AppDbContext context, IMapper mapper)
     {
-        _context = context;
-        _mapper = mapper;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult> GetUsers(
+        [FromQuery]UsersResourceParameters usersResourceParameters, CancellationToken ct)
     {
-        if (_context.Users == null)
-        {
-            return NotFound();
-        }
-        return await _context.Users.ToListAsync();
+        var collection = _context.Users as IQueryable<User>;
+
+        var pagedList = await PagedList<User>.CreateAsync(collection, usersResourceParameters.PageNumber, usersResourceParameters.PageSize, ct);
+
+        var usersForDisplay = _mapper.Map<List<UserForDisplayDto>>(pagedList);
+
+        return Ok(usersForDisplay);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(Guid id)
+    public async Task<ActionResult> GetUser(Guid id, CancellationToken ct)
     {
-        if (_context.Users == null)
-        {
-            return NotFound();
-        }
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(id, ct);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        return user;
+        return Ok(user);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(UserForUpdateDto userForUpdateDto)
+    public async Task<ActionResult> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
-        if (await UserExists(userForUpdateDto.Email))
+        if (await EmailExists(userForUpdateDto.Email, ct))
             return BadRequest("User with that email is already exists");
 
         var user = _mapper.Map<User>(userForUpdateDto);
 
         _context.Entry(user).State = EntityState.Modified;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         var userForDisplayDto = _mapper.Map<UserForDisplayDto>(user);
 
@@ -65,40 +66,36 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(UserForCreationDto userForCreationDto)
+    public async Task<ActionResult> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
     {
         var user = _mapper.Map<User>(userForCreationDto);
-        if (_context.Users == null)
-        {
-            return Problem("Entity set 'AppDbContext.Users'  is null.");
-        }
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync(ct);
+
+        var userForDisplay = _mapper.Map<UserForDisplayDto>(user);
+
+        return CreatedAtAction("GetUser", new { id = user.Id }, userForDisplay);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    public async Task<IActionResult> DeleteUser(Guid id, CancellationToken ct)
     {
-        if (_context.Users == null)
-        {
-            return NotFound();
-        }
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(id, ct);
+
         if (user == null)
         {
             return NotFound();
         }
 
         _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return NoContent();
     }
 
-    private async Task<bool> UserExists(string email)
+    private async Task<bool> EmailExists(string email, CancellationToken ct)
     {
-        return await _context.Users.AnyAsync(x => x.Email == email);
+        return await _context.Users.AnyAsync(x => x.Email == email, ct);
     }
 }

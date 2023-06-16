@@ -1,5 +1,5 @@
 ﻿namespace BookingsWithMe.Models.Availabilitie;
 
-public class AvailabilityForDisplayDto
+public class AvailabilityForDisplayDto : AvailabilityForManipulationDto
 {
 }
