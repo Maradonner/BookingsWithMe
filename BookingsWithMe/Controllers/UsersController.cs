@@ -23,7 +23,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetUsers(
+    public async Task<ActionResult<IEnumerable<UserForDisplayDto>>> GetUsers(
         [FromQuery] UsersResourceParameters usersResourceParameters, CancellationToken ct)
     {
         var collection = _context.Users as IQueryable<User>;
@@ -49,7 +49,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
+    public async Task<ActionResult<UserForDisplayDto>> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
     {
         if (await EmailExists(userForCreationDto.Email, ct))
             return BadRequest("User with that email is already exists");
@@ -74,12 +74,18 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
+    public async Task<ActionResult<UserForDisplayDto>> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
+        var userInDatabase = await _context.Users.FindAsync(userForUpdateDto.Id);
+
+        if (userInDatabase == null)
+            return BadRequest("User with that Id is not found");
+
         var user = _mapper.Map<User>(userForUpdateDto);
 
-        _context.Entry(user).State = EntityState.Modified;
+        _mapper.Map(userInDatabase, user);
 
+        _context.Users.Update(user);
         await _context.SaveChangesAsync(ct);
 
         var userForDisplayDto = _mapper.Map<UserForDisplayDto>(user);
