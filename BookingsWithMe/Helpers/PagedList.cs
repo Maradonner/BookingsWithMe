@@ -26,11 +26,11 @@ public class PagedList<T> : List<T>
     }
 
     public static async Task<PagedList<T>> CreateAsync(
-        IQueryable<T> source, int pageNumber, int pageSize)
+        IQueryable<T> source, int pageNumber, int pageSize, CancellationToken ct)
     {
         var count = source.Count();
         var items = await source.Skip((pageNumber - 1) * pageSize).
-            Take(pageSize).ToListAsync();
+            Take(pageSize).ToListAsync(ct);
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }
 }

@@ -6,7 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddMvc(options => { options.Filters.Add<ValidationFilter>(); });
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add<ValidationFilter>(); 
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -16,7 +20,8 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
