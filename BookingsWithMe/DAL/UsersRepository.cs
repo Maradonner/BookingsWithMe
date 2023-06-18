@@ -20,7 +20,8 @@ public class UsersRepository : IUsersRepository
     {
         var collection = _context.Users as IQueryable<User>;
 
-        var pagedList = await PagedList<User>.CreateAsync(collection, userResourceParameters.PageNumber, userResourceParameters.PageSize, ct);
+        var pagedList = await PagedList<User>.CreateAsync(collection, userResourceParameters.PageNumber,
+            userResourceParameters.PageSize, ct);
 
         return pagedList;
     }

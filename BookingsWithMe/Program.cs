@@ -1,19 +1,16 @@
 using BookingsWithMe.ActionFilter;
-using BookingsWithMe.BL.Interfaces;
 using BookingsWithMe.BL;
+using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.DAL;
+using BookingsWithMe.DAL.Interfaces;
 using BookingsWithMe.Data;
 using Microsoft.EntityFrameworkCore;
-using BookingsWithMe.DAL.Interfaces;
-using BookingsWithMe.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddMvc(options =>
-{
-    options.Filters.Add<ValidationFilter>(); 
-});
+builder.Services.AddMvc(options => { options.Filters.Add<ValidationFilter>(); });
 
 builder.Services.AddControllers();
 
@@ -31,7 +28,6 @@ builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-
 
 
 var app = builder.Build();

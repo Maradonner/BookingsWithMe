@@ -2,13 +2,13 @@
 using BookingsWithMe.Data;
 using BookingsWithMe.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace BookingsWithMe.DAL;
 
 public class AvailabilitiesRepository : IAvailabilitiesRepository
 {
     private readonly AppDbContext _context;
+
     public AvailabilitiesRepository(AppDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));

@@ -10,6 +10,7 @@ public class AvailabilityService : IAvailabilityService
 {
     private readonly IAvailabilitiesRepository _availabilitiesDAL;
     private readonly IMapper _mapper;
+
     public AvailabilityService(IAvailabilitiesRepository availabilitiesDAL, IMapper mapper)
     {
         _availabilitiesDAL = availabilitiesDAL;

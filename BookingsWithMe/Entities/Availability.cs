@@ -11,6 +11,7 @@ public class Availability
 
     [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
+
     public virtual User User { get; set; }
 
     public virtual List<Booking> Bookings { get; set; }

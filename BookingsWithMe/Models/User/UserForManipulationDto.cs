@@ -1,6 +1,4 @@
-﻿using BookingsWithMe.Entities;
-
-namespace BookingsWithMe.Models.User;
+﻿namespace BookingsWithMe.Models.User;
 
 public abstract class UserForManipulationDto
 {

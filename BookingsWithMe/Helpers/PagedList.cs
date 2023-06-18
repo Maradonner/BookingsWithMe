@@ -4,33 +4,32 @@ namespace BookingsWithMe.Helpers;
 
 public class PagedList<T> : List<T>
 {
-    public int CurrentPage { get; private set; }
-
-    public int TotalPages { get; private set; }
-
-    public int PageSize { get; private set; }
-
-    public int TotalCount { get; private set; }
-
-    public bool HasPrevious => (CurrentPage > 1);
-
-    public bool HasNext => (CurrentPage < TotalPages);
-
     public PagedList(List<T> items, int count, int pageNumber, int pageSize)
     {
-        this.TotalCount = count;
-        this.PageSize = pageSize;
-        this.CurrentPage = pageNumber;
-        this.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-        this.AddRange(items);
+        TotalCount = count;
+        PageSize = pageSize;
+        CurrentPage = pageNumber;
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        AddRange(items);
     }
+
+    public int CurrentPage { get; }
+
+    public int TotalPages { get; }
+
+    public int PageSize { get; }
+
+    public int TotalCount { get; }
+
+    public bool HasPrevious => CurrentPage > 1;
+
+    public bool HasNext => CurrentPage < TotalPages;
 
     public static async Task<PagedList<T>> CreateAsync(
         IQueryable<T> source, int pageNumber, int pageSize, CancellationToken ct)
     {
         var count = source.Count();
-        var items = await source.Skip((pageNumber - 1) * pageSize).
-            Take(pageSize).ToListAsync(ct);
+        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(ct);
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }
 }

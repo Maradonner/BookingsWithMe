@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace BookingsWithMe.Models.Availabilitie;
+﻿namespace BookingsWithMe.Models.Availabilitie;
 
 public abstract class AvailabilityForManipulationDto
 {

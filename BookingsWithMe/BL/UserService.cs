@@ -9,18 +9,19 @@ namespace BookingsWithMe.BL;
 
 public class UserService : IUserService
 {
-    private readonly IUsersRepository _usersRepository;
     private readonly IMapper _mapper;
+    private readonly IUsersRepository _usersRepository;
 
     public UserService(IUsersRepository usersRepository, IMapper mapper)
     {
         _usersRepository = usersRepository ??
-            throw new ArgumentNullException(nameof(usersRepository));
+                           throw new ArgumentNullException(nameof(usersRepository));
         _mapper = mapper ??
-            throw new ArgumentNullException(nameof(mapper));
+                  throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<UserForDisplayDto>> GetUsersAsync(UserResourceParameters userResourceParameters, CancellationToken ct)
+    public async Task<IEnumerable<UserForDisplayDto>> GetUsersAsync(UserResourceParameters userResourceParameters,
+        CancellationToken ct)
     {
         var users = await _usersRepository.GetUsersAsync(userResourceParameters, ct);
         return _mapper.Map<IEnumerable<UserForDisplayDto>>(users);
