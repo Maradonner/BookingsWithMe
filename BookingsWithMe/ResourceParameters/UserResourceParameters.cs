@@ -1,6 +1,6 @@
 ﻿namespace BookingsWithMe.ResourceParameters;
 
-public class UsersResourceParameters
+public class UserResourceParameters
 {
     private const int _maxPageSize = 50;
     private int _pageSize = 25;

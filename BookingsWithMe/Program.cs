@@ -1,6 +1,10 @@
 using BookingsWithMe.ActionFilter;
+using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.BL;
 using BookingsWithMe.Data;
 using Microsoft.EntityFrameworkCore;
+using BookingsWithMe.DAL.Interfaces;
+using BookingsWithMe.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +24,14 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("DefaultConnection")!));
+
+builder.Services.AddScoped<IAvailabilitiesRepository, AvailabilitiesRepository>();
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 
 var app = builder.Build();

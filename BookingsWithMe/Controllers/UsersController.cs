@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using BookingsWithMe.Data;
-using BookingsWithMe.Entities;
-using BookingsWithMe.Helpers;
+﻿using BookingsWithMe.BL.Interfaces;
 using BookingsWithMe.Models.User;
 using BookingsWithMe.ResourceParameters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsWithMe.Controllers;
 
@@ -13,82 +9,50 @@ namespace BookingsWithMe.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IMapper _mapper;
+    private readonly IUserService _userService;
 
-    public UsersController(AppDbContext context, IMapper mapper)
+    public UsersController(IUserService userService)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserForDisplayDto>>> GetUsers(
-        [FromQuery] UsersResourceParameters usersResourceParameters, CancellationToken ct)
+        [FromQuery] UserResourceParameters usersResourceParameters, CancellationToken ct)
     {
-        var collection = _context.Users as IQueryable<User>;
-
-        var pagedList = await PagedList<User>.CreateAsync(collection, usersResourceParameters.PageNumber, usersResourceParameters.PageSize, ct);
-
-        var usersForDisplay = _mapper.Map<List<UserForDisplayDto>>(pagedList);
-
+        var usersForDisplay = await _userService.GetUsersAsync(usersResourceParameters, ct);
         return Ok(usersForDisplay);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult> GetUser(Guid id, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync(id, ct);
-
-        if (user == null)
+        var userForDisplay = await _userService.GetUserAsync(id, ct);
+        if (userForDisplay == null)
         {
             return NotFound();
         }
 
-        return Ok(user);
+        return Ok(userForDisplay);
     }
 
     [HttpPost]
     public async Task<ActionResult<UserForDisplayDto>> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
     {
-        if (await EmailExists(userForCreationDto.Email, ct))
+        if (await _userService.EmailExistsAsync(userForCreationDto.Email, ct))
             return BadRequest("User with that email is already exists");
 
-        var user = _mapper.Map<User>(userForCreationDto);
+        var userForDisplay = await _userService.CreateUserAsync(userForCreationDto, ct);
 
-        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
-        {
-            user.Availabilities.Add(new Availability
-            {
-                Day = day,
-                UserId = user.Id,
-            });
-        }
-
-        await _context.Users.AddAsync(user, ct);
-        await _context.SaveChangesAsync(ct);
-
-        var userForDisplay = _mapper.Map<UserForDisplayDto>(user);
-
-        return CreatedAtAction("GetUser", new { id = user.Id }, userForDisplay);
+        return CreatedAtAction("GetUser", new { id = userForDisplay.Id }, userForDisplay);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<UserForDisplayDto>> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
-        var userInDatabase = await _context.Users.FindAsync(userForUpdateDto.Id);
-
-        if (userInDatabase == null)
+        var userForDisplayDto = await _userService.UpdateUserAsync(userForUpdateDto, ct);
+        if (userForDisplayDto == null)
             return BadRequest("User with that Id is not found");
-
-        var user = _mapper.Map<User>(userForUpdateDto);
-
-        _mapper.Map(userInDatabase, user);
-
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync(ct);
-
-        var userForDisplayDto = _mapper.Map<UserForDisplayDto>(user);
 
         return Ok(userForDisplayDto);
     }
@@ -96,21 +60,11 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(Guid id, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync(id, ct);
-
-        if (user == null)
+        if (!await _userService.DeleteUserAsync(id, ct))
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync(ct);
-
         return NoContent();
-    }
-
-    private async Task<bool> EmailExists(string email, CancellationToken ct)
-    {
-        return await _context.Users.AnyAsync(x => x.Email == email, ct);
     }
 }
