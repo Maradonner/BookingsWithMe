@@ -10,7 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddMvc(options => { options.Filters.Add<ValidationFilter>(); });
+builder.Services.AddMvc(options => 
+{ 
+    options.Filters.Add<ValidationFilter>();
+});
 
 builder.Services.AddControllers();
 
