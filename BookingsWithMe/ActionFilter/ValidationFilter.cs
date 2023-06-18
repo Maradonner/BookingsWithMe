@@ -16,15 +16,17 @@ public class ValidationFilter : IAsyncActionFilter
 
             var errorResponse = new ErrorResponse();
             foreach (var error in errorsInModelState)
-            foreach (var subError in error.Value)
             {
-                var errorModel = new ErrorModel
+                foreach (var subError in error.Value)
                 {
-                    FieldName = error.Key,
-                    Message = subError
-                };
+                    var errorModel = new ErrorModel
+                    {
+                        FieldName = error.Key,
+                        Message = subError
+                    };
 
-                errorResponse.Errors.Add(errorModel);
+                    errorResponse.Errors.Add(errorModel);
+                }
             }
 
             context.Result = new BadRequestObjectResult(errorResponse);
