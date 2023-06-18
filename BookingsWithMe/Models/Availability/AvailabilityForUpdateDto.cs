@@ -2,5 +2,4 @@
 
 public class AvailabilityForUpdateDto : AvailabilityForManipulationDto
 {
-    public Guid Id { get; set; }
 }
