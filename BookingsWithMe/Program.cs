@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddMvc(options => 
-{ 
+builder.Services.AddMvc(options =>
+{
     options.Filters.Add<ValidationFilter>();
 });
 
@@ -26,6 +26,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("DefaultConnection")!));
+
+builder.Services.AddSingleton<IPictureService, PictureService>();
 
 builder.Services.AddScoped<IAvailabilitiesRepository, AvailabilitiesRepository>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
