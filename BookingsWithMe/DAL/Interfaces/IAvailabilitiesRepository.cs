@@ -1,5 +1,4 @@
-﻿using BookingsWithMe.Entities;
-using BookingsWithMe.Models.Availabilitie;
+﻿using BookingsWithMe.DAL.Entities;
 
 namespace BookingsWithMe.DAL.Interfaces;
 

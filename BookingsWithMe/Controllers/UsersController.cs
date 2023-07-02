@@ -28,16 +28,13 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> GetUser(Guid id, CancellationToken ct)
     {
         var userForDisplay = await _userService.GetUserAsync(id, ct);
-        if (userForDisplay == null)
-        {
-            return NotFound();
-        }
 
         return Ok(userForDisplay);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserForDisplayDto>> PostUser(UserForCreationDto userForCreationDto, CancellationToken ct)
+    public async Task<ActionResult<UserForDisplayDto>> PostUser(UserForCreationDto userForCreationDto,
+        CancellationToken ct)
     {
         if (await _userService.EmailExistsAsync(userForCreationDto.Email, ct))
             return BadRequest("User with that email is already exists");
@@ -51,8 +48,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserForDisplayDto>> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
         var userForDisplayDto = await _userService.UpdateUserAsync(userForUpdateDto, ct);
-        if (userForDisplayDto == null)
-            return BadRequest("User with that Id is not found");
 
         return Ok(userForDisplayDto);
     }
@@ -61,9 +56,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> DeleteUser(Guid id, CancellationToken ct)
     {
         if (!await _userService.DeleteUserAsync(id, ct))
-        {
             return NotFound();
-        }
 
         return NoContent();
     }

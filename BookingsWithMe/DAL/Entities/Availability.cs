@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookingsWithMe.Entities;
+namespace BookingsWithMe.DAL.Entities;
 
 public class Availability
 {
@@ -11,7 +11,6 @@ public class Availability
 
     [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
-    public virtual User User { get; set; }
-
-    public virtual List<Booking> Bookings { get; set; }
+    public User User { get; set; } = new();
+    public List<Booking> Bookings { get; set; } = new();
 }

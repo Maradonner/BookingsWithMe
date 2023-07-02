@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookingsWithMe.Entities;
+namespace BookingsWithMe.DAL.Entities;
 
 public class Booking
 {
@@ -10,14 +10,13 @@ public class Booking
     public string CustomerName { get; set; } = string.Empty;
     public string CustomerTimeZone { get; set; } = string.Empty;
     public TimeSpan Duration { get; set; }
-    public string Status { get; set; } = string.Empty;  //"Scheduled", "Cancelled", "Completed"
+    public string Status { get; set; } = string.Empty; //"Scheduled", "Cancelled", "Completed"
 
     [ForeignKey(nameof(User))]
     public Guid UserId { get; set; } //Who booked this time slot
-    public virtual User User { get; set; }
+    public User User { get; set; } = new();
 
     [ForeignKey(nameof(Availability))]
     public Guid AvailabilityId { get; set; }
-    public virtual Availability Availability { get; set; }
-
+    public Availability Availability { get; set; } = new();
 }

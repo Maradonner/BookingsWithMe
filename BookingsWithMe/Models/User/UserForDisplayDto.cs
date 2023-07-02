@@ -1,5 +1,5 @@
-﻿using BookingsWithMe.Entities;
-using BookingsWithMe.Models.Availabilitie;
+﻿using BookingsWithMe.DAL.Entities;
+using BookingsWithMe.Models.Availability;
 
 namespace BookingsWithMe.Models.User;
 

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookingsWithMe.Entities;
+using BookingsWithMe.DAL.Entities;
 using BookingsWithMe.Models.User;
 
 namespace BookingsWithMe.Mapper;

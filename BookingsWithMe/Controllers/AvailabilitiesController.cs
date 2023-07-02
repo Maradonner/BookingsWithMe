@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using BookingsWithMe.BL.Interfaces;
-using BookingsWithMe.Data;
-using BookingsWithMe.Entities;
-using BookingsWithMe.Models.Availabilitie;
+﻿using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.Models.Availability;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsWithMe.Controllers;
@@ -26,7 +23,8 @@ public class AvailabilitiesController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<AvailabilityForDisplayDto>> PutAvailability(AvailabilityForUpdateDto availabilityForUpdateDto)
+    public async Task<ActionResult<AvailabilityForDisplayDto>> PutAvailability(
+        AvailabilityForUpdateDto availabilityForUpdateDto)
     {
         var availabilityForDisplayDto = await _availabilityService.UpdateAvailability(availabilityForUpdateDto);
         return availabilityForDisplayDto;
