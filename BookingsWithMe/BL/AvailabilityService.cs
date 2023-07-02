@@ -1,32 +1,32 @@
 ﻿using AutoMapper;
 using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.DAL.Entities;
 using BookingsWithMe.DAL.Interfaces;
-using BookingsWithMe.Entities;
-using BookingsWithMe.Models.Availabilitie;
+using BookingsWithMe.Models.Availability;
 
 namespace BookingsWithMe.BL;
 
 public class AvailabilityService : IAvailabilityService
 {
-    private readonly IAvailabilitiesRepository _availabilitiesDAL;
+    private readonly IAvailabilitiesRepository _availabilitiesDal;
     private readonly IMapper _mapper;
 
-    public AvailabilityService(IAvailabilitiesRepository availabilitiesDAL, IMapper mapper)
+    public AvailabilityService(IAvailabilitiesRepository availabilitiesDal, IMapper mapper)
     {
-        _availabilitiesDAL = availabilitiesDAL;
+        _availabilitiesDal = availabilitiesDal;
         _mapper = mapper;
     }
 
     public async Task<List<AvailabilityForDisplayDto>> GetAvailabilities(Guid userId)
     {
-        var availabilities = await _availabilitiesDAL.GetAvailabilities(userId);
+        var availabilities = await _availabilitiesDal.GetAvailabilities(userId);
         return _mapper.Map<List<AvailabilityForDisplayDto>>(availabilities);
     }
 
     public async Task<AvailabilityForDisplayDto> UpdateAvailability(AvailabilityForUpdateDto availabilityForUpdateDto)
     {
         var availability = _mapper.Map<Availability>(availabilityForUpdateDto);
-        var updatedAvailability = await _availabilitiesDAL.UpdateAvailability(availability);
+        var updatedAvailability = await _availabilitiesDal.UpdateAvailability(availability);
         return _mapper.Map<AvailabilityForDisplayDto>(updatedAvailability);
     }
 }

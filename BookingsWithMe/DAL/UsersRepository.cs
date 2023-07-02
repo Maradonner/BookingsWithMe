@@ -1,6 +1,6 @@
-﻿using BookingsWithMe.DAL.Interfaces;
-using BookingsWithMe.Data;
-using BookingsWithMe.Entities;
+﻿using BookingsWithMe.DAL.Data;
+using BookingsWithMe.DAL.Entities;
+using BookingsWithMe.DAL.Interfaces;
 using BookingsWithMe.Helpers;
 using BookingsWithMe.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,7 @@ public class UsersRepository : IUsersRepository
 
     public async Task<List<User>> GetUsersAsync(UserResourceParameters userResourceParameters, CancellationToken ct)
     {
-        var collection = _context.Users as IQueryable<User>;
+        var collection = _context.Users.AsNoTracking();
 
         var pagedList = await PagedList<User>.CreateAsync(collection, userResourceParameters.PageNumber,
             userResourceParameters.PageSize, ct);
@@ -26,9 +26,11 @@ public class UsersRepository : IUsersRepository
         return pagedList;
     }
 
-    public async Task<User> GetUserAsync(Guid id, CancellationToken ct)
+    public async Task<User?> GetUserAsync(Guid id, CancellationToken ct)
     {
-        return await _context.Users.FindAsync(new object[] { id }, ct);
+        return await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
     public async Task<User> CreateUserAsync(User user, CancellationToken ct)

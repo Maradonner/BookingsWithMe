@@ -2,7 +2,7 @@
 
 public class UserResourceParameters
 {
-    private const int _maxPageSize = 50;
+    private const int MaxPageSize = 50;
     private int _pageSize = 25;
 
     public int PageNumber { get; set; } = 1;
@@ -10,6 +10,6 @@ public class UserResourceParameters
     public int PageSize
     {
         get => _pageSize;
-        set => _pageSize = value > _maxPageSize ? _maxPageSize : value;
+        set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
     }
 }

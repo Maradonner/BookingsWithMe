@@ -1,7 +1,6 @@
-﻿namespace BookingsWithMe.Constants
+﻿namespace BookingsWithMe.Constants;
+
+public static class FileConstants
 {
-    public static class FileConstants
-    {
-        public const string FOLDER_DIRECTORY = "";
-    }
+    public const string FolderDirectory = "";
 }

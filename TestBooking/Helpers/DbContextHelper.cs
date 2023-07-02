@@ -1,4 +1,4 @@
-﻿using BookingsWithMe.Data;
+﻿using BookingsWithMe.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

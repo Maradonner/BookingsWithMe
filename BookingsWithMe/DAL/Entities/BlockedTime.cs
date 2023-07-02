@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookingsWithMe.Entities;
+namespace BookingsWithMe.DAL.Entities;
 
 public class BlockedTime
 {
@@ -11,6 +11,5 @@ public class BlockedTime
 
     [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
-
-    public User User { get; set; }
+    public User User { get; set; } = new();
 }

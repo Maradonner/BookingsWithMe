@@ -1,5 +1,5 @@
 ﻿using BookingsWithMe.BL.Interfaces;
-using BookingsWithMe.Models.Availabilitie;
+using BookingsWithMe.Models.Availability;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsWithMe.Controllers;

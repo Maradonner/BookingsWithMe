@@ -28,8 +28,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> GetUser(Guid id, CancellationToken ct)
     {
         var userForDisplay = await _userService.GetUserAsync(id, ct);
-        if (userForDisplay == null)
-            return NotFound();
 
         return Ok(userForDisplay);
     }
@@ -50,8 +48,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserForDisplayDto>> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
         var userForDisplayDto = await _userService.UpdateUserAsync(userForUpdateDto, ct);
-        if (userForDisplayDto == null)
-            return BadRequest("User with that Id is not found");
 
         return Ok(userForDisplayDto);
     }

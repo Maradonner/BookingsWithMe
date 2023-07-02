@@ -1,9 +1,9 @@
-﻿using BookingsWithMe.Entities;
+﻿using BookingsWithMe.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookingsWithMe.Data;
+namespace BookingsWithMe.DAL.Data;
 
-public class AppDbContext : DbContext
+public sealed class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -15,4 +15,5 @@ public class AppDbContext : DbContext
     public DbSet<BlockedTime> BlockedTimes { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Session> Sessions { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿namespace BookingsWithMe.Models.Availabilitie;
+﻿namespace BookingsWithMe.Models.Availability;
 
 public class AvailabilityForCreationDto : AvailabilityForManipulationDto
 {

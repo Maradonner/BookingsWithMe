@@ -1,6 +1,6 @@
-﻿using BookingsWithMe.DAL.Interfaces;
-using BookingsWithMe.Data;
-using BookingsWithMe.Entities;
+﻿using BookingsWithMe.DAL.Data;
+using BookingsWithMe.DAL.Entities;
+using BookingsWithMe.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsWithMe.DAL;

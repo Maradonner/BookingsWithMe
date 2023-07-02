@@ -2,5 +2,5 @@
 
 public class BaseTest
 {
-    protected DbContextHelper _dbHelper = new();
+    protected DbContextHelper DbHelper = new();
 }

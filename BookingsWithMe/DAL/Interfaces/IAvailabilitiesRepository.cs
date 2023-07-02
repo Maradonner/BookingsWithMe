@@ -1,4 +1,4 @@
-﻿using BookingsWithMe.Entities;
+﻿using BookingsWithMe.DAL.Entities;
 
 namespace BookingsWithMe.DAL.Interfaces;
 

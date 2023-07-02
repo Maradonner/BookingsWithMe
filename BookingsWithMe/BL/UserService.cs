@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.DAL.Entities;
 using BookingsWithMe.DAL.Interfaces;
-using BookingsWithMe.Entities;
 using BookingsWithMe.Models.User;
 using BookingsWithMe.ResourceParameters;
 

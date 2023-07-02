@@ -1,4 +1,4 @@
-﻿using BookingsWithMe.Models.Availabilitie;
+﻿using BookingsWithMe.Models.Availability;
 
 namespace BookingsWithMe.BL.Interfaces;
 
