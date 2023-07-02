@@ -16,7 +16,7 @@ public class AvailabilitiesRepository : IAvailabilitiesRepository
 
     public async Task<List<Availability>> GetAvailabilities(Guid userId)
     {
-        var availabilities = await _context.Availabilities.ToListAsync();
+        //var availabilities = await _context.Availabilities.ToListAsync();
 
         var availabilitiesForReturn = await _context.Availabilities
             .AsNoTracking()
@@ -28,7 +28,7 @@ public class AvailabilitiesRepository : IAvailabilitiesRepository
 
     public void UpdateAvailability(Availability availability)
     {
-        _context.Availabilities.Add(availability);
+        _context.Availabilities.Update(availability);
     }
 
     public async Task<bool> SaveChangesAsync(CancellationToken ct)

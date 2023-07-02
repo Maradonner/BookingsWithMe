@@ -1,4 +1,6 @@
-﻿using BookingsWithMe.BL.Interfaces;
+﻿using AutoMapper;
+using BookingsWithMe.BL.Interfaces;
+using BookingsWithMe.DAL.Entities;
 using BookingsWithMe.Models.User;
 using BookingsWithMe.ResourceParameters;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +12,12 @@ namespace BookingsWithMe.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IMapper mapper)
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     [HttpGet]
@@ -25,11 +29,13 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetUser(Guid id, CancellationToken ct)
+    public async Task<ActionResult<UserForDisplayDto>> GetUser(Guid id, CancellationToken ct)
     {
-        var userForDisplay = await _userService.GetUserAsync(id, ct);
+        var user = await _userService.GetUserAsync(id, ct);
 
-        return Ok(userForDisplay);
+        var userForReturn = _mapper.Map<UserForDisplayDto>(user);
+
+        return userForReturn;
     }
 
     [HttpPost]
@@ -39,24 +45,39 @@ public class UsersController : ControllerBase
         if (await _userService.EmailExistsAsync(userForCreationDto.Email, ct))
             return BadRequest("User with that email is already exists");
 
-        var userForDisplay = await _userService.CreateUserAsync(userForCreationDto, ct);
+        var user = _mapper.Map<User>(userForCreationDto);
 
-        return CreatedAtAction("GetUser", new { id = userForDisplay.Id }, userForDisplay);
+        var userForDisplay = await _userService.CreateUserAsync(user, ct);
+
+        var userForReturn = _mapper.Map<UserForDisplayDto>(userForDisplay);
+
+        return CreatedAtAction("GetUser", new { id = userForDisplay.Id }, userForReturn);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     public async Task<ActionResult<UserForDisplayDto>> PutUser(UserForUpdateDto userForUpdateDto, CancellationToken ct)
     {
-        var userForDisplayDto = await _userService.UpdateUserAsync(userForUpdateDto, ct);
+        var user = _mapper.Map<User>(userForUpdateDto);
 
-        return Ok(userForDisplayDto);
+        var userForDisplayDto = await _userService.UpdateUserAsync(user, ct);
+
+        if (userForDisplayDto == null)
+            return BadRequest("Failed to update");
+
+        var userForReturn = _mapper.Map<UserForDisplayDto>(userForDisplayDto);
+
+        return userForReturn;
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(Guid id, CancellationToken ct)
     {
-        if (!await _userService.DeleteUserAsync(id, ct))
+        var user = await _userService.GetUserAsync(id, ct);
+        if(user == null)
             return NotFound();
+        var result = await _userService.DeleteUserAsync(user, ct);
+        if (!result)
+            return BadRequest("Just do not deleted");
 
         return NoContent();
     }
