@@ -9,47 +9,49 @@ namespace BookingsWithMe.BL;
 
 public class UserService : IUserService
 {
-    private readonly IMapper _mapper;
     private readonly IUsersRepository _usersRepository;
 
-    public UserService(IUsersRepository usersRepository, IMapper mapper)
+    public UserService(IUsersRepository usersRepository)
     {
         _usersRepository = usersRepository ??
                            throw new ArgumentNullException(nameof(usersRepository));
-        _mapper = mapper ??
-                  throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IEnumerable<UserForDisplayDto>> GetUsersAsync(UserResourceParameters userResourceParameters,
+    public async Task<IEnumerable<User>> GetUsersAsync(UserResourceParameters userResourceParameters,
         CancellationToken ct)
     {
-        var users = await _usersRepository.GetUsersAsync(userResourceParameters, ct);
-        return _mapper.Map<IEnumerable<UserForDisplayDto>>(users);
+        var users = await _usersRepository.GetUserListAsync(userResourceParameters, ct);
+        return users;
     }
 
-    public async Task<UserForDisplayDto> GetUserAsync(Guid id, CancellationToken ct)
+    public async Task<User?> GetUserAsync(Guid id, CancellationToken ct)
     {
         var user = await _usersRepository.GetUserAsync(id, ct);
-        return _mapper.Map<UserForDisplayDto>(user);
+        return user;
     }
 
-    public async Task<UserForDisplayDto> CreateUserAsync(UserForCreationDto userForCreationDto, CancellationToken ct)
+    public async Task<User> CreateUserAsync(User user, CancellationToken ct)
     {
-        var user = _mapper.Map<User>(userForCreationDto);
-        var createdUser = await _usersRepository.CreateUserAsync(user, ct);
-        return _mapper.Map<UserForDisplayDto>(createdUser);
+        await _usersRepository.CreateUserAsync(user, ct);
+        await _usersRepository.SaveChangesAsync(ct);
+        return user;
     }
 
-    public async Task<UserForDisplayDto> UpdateUserAsync(UserForUpdateDto userForUpdateDto, CancellationToken ct)
+    public async Task<User?> UpdateUserAsync(User user, CancellationToken ct)
     {
-        var user = _mapper.Map<User>(userForUpdateDto);
-        var updatedUser = await _usersRepository.UpdateUserAsync(user, ct);
-        return _mapper.Map<UserForDisplayDto>(updatedUser);
+        var existingUser = await _usersRepository.GetUserAsync(user.Id, ct);
+        if (existingUser == null)
+            return null;
+
+        _usersRepository.UpdateUser(user);
+        await _usersRepository.SaveChangesAsync(ct);
+        return user;
     }
 
-    public async Task<bool> DeleteUserAsync(Guid id, CancellationToken ct)
+    public async Task<bool> DeleteUserAsync(User user, CancellationToken ct)
     {
-        return await _usersRepository.DeleteUserAsync(id, ct);
+        _usersRepository.DeleteUser(user);
+        return await _usersRepository.SaveChangesAsync(ct);
     }
 
     public async Task<bool> EmailExistsAsync(string email, CancellationToken ct)

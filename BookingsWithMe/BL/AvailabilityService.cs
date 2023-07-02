@@ -8,25 +8,28 @@ namespace BookingsWithMe.BL;
 
 public class AvailabilityService : IAvailabilityService
 {
-    private readonly IAvailabilitiesRepository _availabilitiesDal;
+    private readonly IAvailabilitiesRepository _availabilitiesRepository;
     private readonly IMapper _mapper;
 
-    public AvailabilityService(IAvailabilitiesRepository availabilitiesDal, IMapper mapper)
+    public AvailabilityService(IAvailabilitiesRepository availabilitiesRepository, IMapper mapper)
     {
-        _availabilitiesDal = availabilitiesDal;
+        _availabilitiesRepository = availabilitiesRepository;
         _mapper = mapper;
     }
 
     public async Task<List<AvailabilityForDisplayDto>> GetAvailabilities(Guid userId)
     {
-        var availabilities = await _availabilitiesDal.GetAvailabilities(userId);
+        var availabilities = await _availabilitiesRepository.GetAvailabilities(userId);
         return _mapper.Map<List<AvailabilityForDisplayDto>>(availabilities);
     }
 
     public async Task<AvailabilityForDisplayDto> UpdateAvailability(AvailabilityForUpdateDto availabilityForUpdateDto)
     {
         var availability = _mapper.Map<Availability>(availabilityForUpdateDto);
-        var updatedAvailability = await _availabilitiesDal.UpdateAvailability(availability);
-        return _mapper.Map<AvailabilityForDisplayDto>(updatedAvailability);
+
+        _availabilitiesRepository.UpdateAvailability(availability);
+        await _availabilitiesRepository.SaveChangesAsync(default);
+
+        return _mapper.Map<AvailabilityForDisplayDto>(availability);
     }
 }

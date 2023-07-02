@@ -5,6 +5,7 @@ using BookingsWithMe.Cookies;
 using BookingsWithMe.DAL;
 using BookingsWithMe.DAL.Data;
 using BookingsWithMe.DAL.Interfaces;
+using BookingsWithMe.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,8 +46,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IWebCookie, WebCookie>();
 
+builder.Services.AddTransient<GlobalErrorHandler>();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalErrorHandler>();
 
 if (app.Environment.IsDevelopment())
 {

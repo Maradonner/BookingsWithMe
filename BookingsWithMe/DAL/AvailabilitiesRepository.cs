@@ -16,16 +16,19 @@ public class AvailabilitiesRepository : IAvailabilitiesRepository
 
     public async Task<List<Availability>> GetAvailabilities(Guid userId)
     {
-        return await _context.Availabilities
+        //var availabilities = await _context.Availabilities.ToListAsync();
+
+        var availabilitiesForReturn = await _context.Availabilities
+            .AsNoTracking()
             .Where(a => a.UserId == userId)
             .ToListAsync();
+
+        return availabilitiesForReturn;
     }
 
-    public async Task<Availability> UpdateAvailability(Availability availability)
+    public void UpdateAvailability(Availability availability)
     {
         _context.Availabilities.Update(availability);
-        await _context.SaveChangesAsync();
-        return availability;
     }
 
     public async Task<bool> SaveChangesAsync(CancellationToken ct)
